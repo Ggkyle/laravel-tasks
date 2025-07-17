@@ -43,7 +43,7 @@
 
     <form method="GET" action="/" class="filter-form">
         <input type="text" name="name" placeholder="Name" value="{{ request('name') }}">
-        
+
         <select name="element">
             <option value="">Any Element</option>
             <option value="Land" {{ request('element') == 'Land' ? 'selected' : '' }}>Land</option>
@@ -58,7 +58,6 @@
             <option value="Electric" {{ request('type') == 'Electric' ? 'selected' : '' }}>Electric</option>
             <option value="Grass" {{ request('type') == 'Grass' ? 'selected' : '' }}>Grass</option>
             <option value="Psychic" {{ request('type') == 'Psychic' ? 'selected' : '' }}>Psychic</option>
-            <!-- Add more as needed -->
         </select>
 
         <select name="rarity">
@@ -71,6 +70,8 @@
         <input type="number" name="level" placeholder="Level" value="{{ request('level') }}" min="1">
         <input type="number" name="min_hp" placeholder="Min HP" value="{{ request('min_hp') }}">
         <input type="number" name="max_hp" placeholder="Max HP" value="{{ request('max_hp') }}">
+        <input type="number" name="min_attack" placeholder="Min Attack" value="{{ request('min_attack') }}">
+        <input type="number" name="max_attack" placeholder="Max Attack" value="{{ request('max_attack') }}">
 
         <button type="submit">Search</button>
     </form>
@@ -85,6 +86,7 @@
                     <th>Rarity</th>
                     <th>Level</th>
                     <th>HP</th>
+                    <th>Attack</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,6 +98,7 @@
                         <td>{{ $pokemon->rarity }}</td>
                         <td>{{ $pokemon->level }}</td>
                         <td>{{ $pokemon->hp }}</td>
+                        <td>{{ $pokemon->attack }}</td>
                     </tr>
                 @endforeach
             </tbody>

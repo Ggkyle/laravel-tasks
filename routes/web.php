@@ -5,19 +5,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Pokemon;
-use App\Http\Controllers\PokemonController;
 
-/**
- * Show Pokémon Dashboard with optional search filters.
- */
 Route::get('/', function (Request $request) {
     Log::info("GET / with search", $request->all());
 
     $startTime = microtime(true);
 
-    // Build query with optional filters
     $query = Pokemon::query();
 
+    // Search filters
     if ($request->filled('name')) {
         $query->where('name', 'like', '%' . $request->name . '%');
     }
@@ -46,18 +42,14 @@ Route::get('/', function (Request $request) {
         $query->where('hp', '<=', $request->max_hp);
     }
 
-    // Optional cache with unique key for each search
+    // Cache by unique request
     $cacheKey = 'pokemons_' . md5(json_encode($request->all()));
-
-    if (Cache::has($cacheKey)) {
-        $data = Cache::get($cacheKey);
-    } else {
-        $data = $query->orderBy('created_at', 'asc')->get();
-        Cache::put($cacheKey, $data, now()->addMinutes(5));
-    }
+    $pokemons = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($query) {
+        return $query->orderBy('created_at', 'asc')->get();
+    });
 
     return view('pokemons', [
-        'pokemons' => $data,
+        'pokemons' => $pokemons,
         'elapsed' => microtime(true) - $startTime,
     ]);
 });
