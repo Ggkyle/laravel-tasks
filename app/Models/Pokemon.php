@@ -19,5 +19,6 @@ class Pokemon extends Model
         'rarity',
         'hp',
         'attack',
+        'image',
     ];
 }

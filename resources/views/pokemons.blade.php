@@ -31,9 +31,15 @@
             padding: 10px;
             text-align: left;
             border-bottom: 1px solid #eee;
+            vertical-align: middle;
         }
         th {
             background: #f7f7f7;
+        }
+        img.pokemon-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -80,6 +86,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Image</th>
                     <th>Name</th>
                     <th>Element</th>
                     <th>Type</th>
@@ -92,6 +99,13 @@
             <tbody>
                 @foreach($pokemons as $pokemon)
                     <tr>
+                        <td>
+                            @if($pokemon->image)
+                                <img src="{{ asset($pokemon->image) }}" alt="{{ $pokemon->name }}" class="pokemon-img">
+                            @else
+                                <span>N/A</span>
+                            @endif
+                        </td>
                         <td>{{ $pokemon->name }}</td>
                         <td>{{ $pokemon->element }}</td>
                         <td>{{ $pokemon->type }}</td>
