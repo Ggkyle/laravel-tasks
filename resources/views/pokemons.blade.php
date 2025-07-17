@@ -101,8 +101,8 @@
                     <tr>
                         <td>
                             @if($pokemon->image)
-                                <img src="{{ asset($pokemon->image) }}" alt="{{ $pokemon->name }}" class="pokemon-img">
-                            @else
+                                <img src="{{ asset('images/pokemons/' . $pokemon->image) }}" alt="{{ $pokemon->name }}" class="pokemon-img">
+                                @else
                                 <span>N/A</span>
                             @endif
                         </td>
