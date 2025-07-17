@@ -1,73 +1,63 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Pokemon;
+use App\Http\Controllers\PokemonController;
 
 /**
-    * Show Task Dashboard
-    */
-Route::get('/', function () {
-    Log::info("Get /");
+ * Show Pokémon Dashboard with optional search filters.
+ */
+Route::get('/', function (Request $request) {
+    Log::info("GET / with search", $request->all());
+
     $startTime = microtime(true);
-    // Simple cache-aside logic
-    if (Cache::has('tasks')) {
-        $data = Cache::get('tasks');
+
+    // Build query with optional filters
+    $query = Pokemon::query();
+
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
+    }
+
+    if ($request->filled('element')) {
+        $query->where('element', $request->element);
+    }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('rarity')) {
+        $query->where('rarity', $request->rarity);
+    }
+
+    if ($request->filled('level')) {
+        $query->where('level', $request->level);
+    }
+
+    if ($request->filled('min_hp')) {
+        $query->where('hp', '>=', $request->min_hp);
+    }
+
+    if ($request->filled('max_hp')) {
+        $query->where('hp', '<=', $request->max_hp);
+    }
+
+    // Optional cache with unique key for each search
+    $cacheKey = 'pokemons_' . md5(json_encode($request->all()));
+
+    if (Cache::has($cacheKey)) {
+        $data = Cache::get($cacheKey);
     } else {
-        $data = Task::orderBy('created_at', 'asc')->get();
-        Cache::add('tasks', $data);
+        $data = $query->orderBy('created_at', 'asc')->get();
+        Cache::put($cacheKey, $data, now()->addMinutes(5));
     }
-    return view('tasks', ['tasks' => $data, 'elapsed' => microtime(true) - $startTime]);
-});
 
-/**
-    * Add New Task
-    */
-Route::post('/task', function (Request $request) {
-    Log::info("Post /task");
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|max:255',
+    return view('pokemons', [
+        'pokemons' => $data,
+        'elapsed' => microtime(true) - $startTime,
     ]);
-
-    if ($validator->fails()) {
-        Log::error("Add task failed.");
-        return redirect('/')
-            ->withInput()
-            ->withErrors($validator);
-    }
-
-    $task = new Task;
-    $task->name = $request->name;
-    $task->save();
-    // Clear the cache
-    Cache::flush();
-
-    return redirect('/');
-});
-
-/**
-    * Delete Task
-    */
-Route::delete('/task/{id}', function ($id) {
-    Log::info('Delete /task/'.$id);
-    Task::findOrFail($id)->delete();
-    // Clear the cache
-    Cache::flush();
-
-    return redirect('/');
 });
