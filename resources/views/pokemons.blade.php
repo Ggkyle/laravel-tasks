@@ -88,6 +88,7 @@
                 <tr>
                     <th>Image</th>
                     <th>Name</th>
+                    <th>Description</th>
                     <th>Element</th>
                     <th>Type</th>
                     <th>Rarity</th>
@@ -107,6 +108,7 @@
                             @endif
                         </td>
                         <td>{{ $pokemon->name }}</td>
+                        <td>{{ $pokemon->description}}</td>
                         <td>{{ $pokemon->element }}</td>
                         <td>{{ $pokemon->type }}</td>
                         <td>{{ $pokemon->rarity }}</td>

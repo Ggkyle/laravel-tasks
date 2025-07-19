@@ -22,6 +22,10 @@ class PokemonController extends Controller
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
+        if ($request->filled('description')) {
+            $query->where('description', 'like', '%' . $request->description . '%');
+        }
+
         if ($request->filled('element')) {
             $query->where('element', $request->element);
         }
@@ -61,4 +65,4 @@ class PokemonController extends Controller
             'elapsed' => microtime(true) - $startTime,
         ]);
     }
-}
+} 
